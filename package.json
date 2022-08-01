@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/EhNosso/youtubescraper/issues"
   },
-  "homepage": "https://github.com/EhNosso/youtubescraper#readme"
+  "homepage": "https://github.com/EhNosso/youtubescraper#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
 }
