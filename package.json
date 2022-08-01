@@ -1,0 +1,22 @@
+{
+  "name": "@ehnosso/youtubescraper",
+  "version": "1.0.0",
+  "description": "Scraper YT",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EhNosso/youtubescraper.git"
+  },
+  "keywords": [
+    "youtube"
+  ],
+  "author": "Andre Ferreira",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EhNosso/youtubescraper/issues"
+  },
+  "homepage": "https://github.com/EhNosso/youtubescraper#readme"
+}
