@@ -6,6 +6,10 @@ class CrawlYT {
         this.data = {};
     }
 
+    isValidDate(d) {
+        return d instanceof Date;
+    }
+
     async get(url){
         try{
             const raw = (await axios.get(url)).data;
@@ -75,7 +79,7 @@ class CrawlYT {
                                     try{
                                         if(video.gridVideoRenderer && video.gridVideoRenderer.publishedTimeText){
                                             let publishedAt = null;
-                                            let publishedTimeText = video.gridVideoRenderer.publishedTimeText.simpleText;
+                                            let publishedTimeText = video.gridVideoRenderer.publishedTimeText.simpleText.replace("Streamed ", "");
                                             let publishedTimeTextSplited = publishedTimeText.split(" ");
                 
                                             if(publishedTimeText.includes("years"))
@@ -113,7 +117,7 @@ class CrawlYT {
                                                 viewCount: Number(video.gridVideoRenderer.viewCountText.simpleText.replace(" views", "").replace(",", "").trim()),
                                             };
                 
-                                            if(!isNaN(dataVideo.viewCount) && dataVideo.id && dataVideo.channelId)
+                                            if(!isNaN(dataVideo.viewCount) && dataVideo.id && dataVideo.channelId && this.isValidDate(dataVideo.publishedAt))
                                                 videos.push(dataVideo);
                                         }                                        
                                     }
