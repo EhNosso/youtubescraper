@@ -72,8 +72,7 @@ class CrawlYT {
                         for(let videoInfo of videoSession.itemSectionRenderer.contents){                            
                             if(videoInfo.shelfRenderer){
                                 for(let video of videoInfo.shelfRenderer.content.horizontalListRenderer.items){
-
-                                    //try{
+                                    try{
                                         if(video.gridVideoRenderer && video.gridVideoRenderer.publishedTimeText){
                                             let publishedAt = null;
                                             let publishedTimeText = video.gridVideoRenderer.publishedTimeText.simpleText;
@@ -103,8 +102,8 @@ class CrawlYT {
                                                 publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 1000));
                                             else if(publishedTimeText.includes("seconds"))
                                                 publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 1000));
-                
-                                            videos.push({
+
+                                            const dataVideo = {
                                                 channelId: this.data.header.c4TabbedHeaderRenderer.channelId,
                                                 id: video.gridVideoRenderer.videoId,
                                                 thumbnail: (video.gridVideoRenderer.thumbnail.thumbnails.length >= 4) ? video.gridVideoRenderer.thumbnail.thumbnails[3].url : video.gridVideoRenderer.thumbnail.thumbnails[2].url,
@@ -112,11 +111,13 @@ class CrawlYT {
                                                 publishedAt,
                                                 link: `https://www.youtube.com/watch?v=${video.gridVideoRenderer.videoId}`,
                                                 viewCount: Number(video.gridVideoRenderer.viewCountText.simpleText.replace(" views", "").replace(",", "").trim()),
-                                            })
-                                        }
-                                        
-                                    //}
-                                    //catch(e){}
+                                            };
+                
+                                            if(!isNaN(dataVideo.viewCount) && dataVideo.id && dataVideo.channelId)
+                                                videos.push(dataVideo);
+                                        }                                        
+                                    }
+                                    catch(e){}
                                 }                                
                             }                            
                         }
