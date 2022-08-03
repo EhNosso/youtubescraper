@@ -16,7 +16,7 @@ class CrawlYT {
             const dataRaw = /var ytInitialData = (.*);<\/script>/.exec(raw)?.[1] || "{}";
             const ytInitialData = JSON.parse(dataRaw);
             this.data = ytInitialData;
-            fs.writeFileSync("data.json", JSON.stringify(ytInitialData, null, 4));
+            //fs.writeFileSync("data.json", JSON.stringify(ytInitialData, null, 4));
             return this;
         }
         catch(e){
@@ -75,11 +75,15 @@ class CrawlYT {
                     if(videoSession.itemSectionRenderer){
                         for(let videoInfo of videoSession.itemSectionRenderer.contents){                            
                             if(videoInfo.shelfRenderer){
-                                for(let video of videoInfo.shelfRenderer.content.horizontalListRenderer.items){
+                                const items = (videoInfo.shelfRenderer.content.horizontalListRenderer) ? videoInfo.shelfRenderer.content.horizontalListRenderer.items : videoInfo.shelfRenderer.content.expandedShelfContentsRenderer.items;
+
+                                for(let video of items){
                                     try{
-                                        if(video.gridVideoRenderer && video.gridVideoRenderer.publishedTimeText){
+                                        const itemVideo = (video.gridVideoRenderer) ? video.gridVideoRenderer: video.videoRenderer;
+
+                                        if(itemVideo && itemVideo.publishedTimeText){
                                             let publishedAt = null;
-                                            let publishedTimeText = video.gridVideoRenderer.publishedTimeText.simpleText.replace("Streamed ", "");
+                                            let publishedTimeText = itemVideo.publishedTimeText.simpleText.replace("Streamed ", "");
                                             let publishedTimeTextSplited = publishedTimeText.split(" ");
                 
                                             if(publishedTimeText.includes("years"))
@@ -109,19 +113,21 @@ class CrawlYT {
 
                                             const dataVideo = {
                                                 channelId: this.data.header.c4TabbedHeaderRenderer.channelId,
-                                                id: video.gridVideoRenderer.videoId,
-                                                thumbnail: (video.gridVideoRenderer.thumbnail.thumbnails.length >= 4) ? video.gridVideoRenderer.thumbnail.thumbnails[3].url : video.gridVideoRenderer.thumbnail.thumbnails[2].url,
-                                                title: video.gridVideoRenderer.title.simpleText,
+                                                id: itemVideo.videoId,
+                                                thumbnail: (itemVideo.thumbnail.thumbnails.length >= 4) ? itemVideo.thumbnail.thumbnails[3].url : itemVideo.thumbnail.thumbnails[2].url,
+                                                title: itemVideo.title.simpleText,
                                                 publishedAt,
-                                                link: `https://www.youtube.com/watch?v=${video.gridVideoRenderer.videoId}`,
-                                                viewCount: Number(video.gridVideoRenderer.viewCountText.simpleText.replace(" views", "").replace(",", "").trim()),
+                                                link: `https://www.youtube.com/watch?v=${itemVideo.videoId}`,
+                                                viewCount: Number(itemVideo.viewCountText.simpleText.replace(" views", "").replace(",", "").trim()),
                                             };
                 
                                             if(!isNaN(dataVideo.viewCount) && dataVideo.id && dataVideo.channelId && this.isValidDate(dataVideo.publishedAt))
                                                 videos.push(dataVideo);
                                         }                                        
                                     }
-                                    catch(e){}
+                                    catch(e){
+                                        //console.log(e);
+                                    }
                                 }                                
                             }                            
                         }
