@@ -75,8 +75,13 @@ class CrawlYT {
                     if(videoSession.itemSectionRenderer){
                         for(let videoInfo of videoSession.itemSectionRenderer.contents){                            
                             if(videoInfo.shelfRenderer){
-                                const items = (videoInfo.shelfRenderer.content.horizontalListRenderer) ? videoInfo.shelfRenderer.content.horizontalListRenderer.items : videoInfo.shelfRenderer.content.expandedShelfContentsRenderer.items;
-
+                                let items = [];
+                                
+                                try{
+                                    items = (videoInfo.shelfRenderer.content.horizontalListRenderer) ? videoInfo.shelfRenderer.content.horizontalListRenderer.items : videoInfo.shelfRenderer.content.expandedShelfContentsRenderer.items;
+                                }
+                                catch(e){}
+                                
                                 for(let video of items){
                                     try{
                                         const itemVideo = (video.gridVideoRenderer) ? video.gridVideoRenderer: video.videoRenderer;
