@@ -155,15 +155,17 @@ class CrawlYT {
                         const channels = channelsSection.itemSectionRenderer.contents;
 
                         for(let channelList of channels){
-                            for(let channel of channelList.gridRenderer.items){
-                                if(channel.gridChannelRenderer){
-                                    channel = channel.gridChannelRenderer;
-                                    channelsReturn.push({
-                                        channelId: channel.channelId,
-                                        thumbnail: channel.thumbnail.thumbnails[2].url,
-                                        title: channel.title.simpleText,
-                                    })
-                                };
+                            if(channelList.gridRenderer){
+                                for(let channel of channelList.gridRenderer.items){
+                                    if(channel.gridChannelRenderer){
+                                        channel = channel.gridChannelRenderer;
+                                        channelsReturn.push({
+                                            channelId: channel.channelId,
+                                            thumbnail: channel.thumbnail.thumbnails[2].url,
+                                            title: channel.title.simpleText,
+                                        })
+                                    };
+                                }
                             }
                         }
                     }

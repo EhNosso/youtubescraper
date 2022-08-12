@@ -1,6 +1,6 @@
 {
   "name": "@ehnosso/youtubescraper",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Scraper YT",
   "main": "index.js",
   "scripts": {

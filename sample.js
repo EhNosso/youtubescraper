@@ -1,7 +1,7 @@
 const crawl = require('./index');
 
 (async () => {
-    const data = await crawl.get('https://www.youtube.com/channel/UC8E50x5nSbZ8XDv836RmgeQ');
+    const data = await crawl.get('https://www.youtube.com/c/ratoborrachudo');
     const videos = data.getVideos();
     console.log(videos);
     //const channelInfo = data.getChannelInfo();
