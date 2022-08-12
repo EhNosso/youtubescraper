@@ -1,5 +1,6 @@
 const axios = require("axios");
 const fs = require("fs");
+const { parse } = require("node-html-parser");
 
 class CrawlYT {
     constructor(){
@@ -181,6 +182,27 @@ class CrawlYT {
         }
 
         return channelsReturn;
+    }
+
+    async inLive(channel){
+        try{
+            const response = await axios.get(`https://youtube.com/channel/${channel}/live`);
+            const html = parse(response.data);
+            const canonicalURLTag = html.querySelector('link[rel=canonical]')
+            const canonicalURL = canonicalURLTag.getAttribute('href')
+            const isStreaming = canonicalURL.includes('/watch?v=');
+
+            return {
+                status: isStreaming,
+                url: canonicalURL
+            }
+        }
+        catch(e){
+            return {
+                error: e,
+                status: false
+            }
+        }
     }
 }
 

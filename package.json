@@ -1,6 +1,6 @@
 {
   "name": "@ehnosso/youtubescraper",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Scraper YT",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/EhNosso/youtubescraper#readme",
   "dependencies": {
-    "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "node-html-parser": "^5.4.2-0"
   }
 }
