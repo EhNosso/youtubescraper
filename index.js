@@ -148,23 +148,25 @@ class CrawlYT {
     getChannelsLink(){
         let channelsReturn = [];
 
-        for(let tab of this.data.contents.twoColumnBrowseResultsRenderer.tabs){
-            if(tab.tabRenderer && tab.tabRenderer.title == "Channels"){
-                for(let channelsSection of tab.tabRenderer.content.sectionListRenderer.contents){
-                    if(channelsSection.itemSectionRenderer.contents){
-                        const channels = channelsSection.itemSectionRenderer.contents;
-
-                        for(let channelList of channels){
-                            if(channelList.gridRenderer){
-                                for(let channel of channelList.gridRenderer.items){
-                                    if(channel.gridChannelRenderer){
-                                        channel = channel.gridChannelRenderer;
-                                        channelsReturn.push({
-                                            channelId: channel.channelId,
-                                            thumbnail: channel.thumbnail.thumbnails[2].url,
-                                            title: channel.title.simpleText,
-                                        })
-                                    };
+        if(data.contents){
+            for(let tab of this.data.contents.twoColumnBrowseResultsRenderer.tabs){
+                if(tab.tabRenderer && tab.tabRenderer.title == "Channels"){
+                    for(let channelsSection of tab.tabRenderer.content.sectionListRenderer.contents){
+                        if(channelsSection.itemSectionRenderer.contents){
+                            const channels = channelsSection.itemSectionRenderer.contents;
+    
+                            for(let channelList of channels){
+                                if(channelList.gridRenderer){
+                                    for(let channel of channelList.gridRenderer.items){
+                                        if(channel.gridChannelRenderer){
+                                            channel = channel.gridChannelRenderer;
+                                            channelsReturn.push({
+                                                channelId: channel.channelId,
+                                                thumbnail: channel.thumbnail.thumbnails[2].url,
+                                                title: channel.title.simpleText,
+                                            })
+                                        };
+                                    }
                                 }
                             }
                         }
@@ -172,7 +174,7 @@ class CrawlYT {
                 }
             }
         }
-
+        
         return channelsReturn;
     }
 }
