@@ -148,7 +148,7 @@ class CrawlYT {
     getChannelsLink(){
         let channelsReturn = [];
 
-        if(data.contents){
+        if(this.data.contents){
             for(let tab of this.data.contents.twoColumnBrowseResultsRenderer.tabs){
                 if(tab.tabRenderer && tab.tabRenderer.title == "Channels"){
                     for(let channelsSection of tab.tabRenderer.content.sectionListRenderer.contents){
@@ -174,7 +174,7 @@ class CrawlYT {
                 }
             }
         }
-        
+
         return channelsReturn;
     }
 }
