@@ -25,45 +25,50 @@ class CrawlYT {
     }
 
     getChannelInfo(){
-        let data = {
-            name: this.data.metadata.channelMetadataRenderer.title,
-            youtube: this.data.metadata.channelMetadataRenderer.channelUrl,
-            avatar: this.data.metadata.channelMetadataRenderer.avatar.thumbnails[0].url,
-            customUrl: this.data.metadata.channelMetadataRenderer.vanityChannelUrl.split("/")[4] || this.data.metadata.channelMetadataRenderer.vanityChannelUrl.split("/")[3],
-            links: [],
-        };
-
-        try{
-            data.cover = this.data.header.c4TabbedHeaderRenderer.banner.thumbnails[5].url;
+        if(this.data.metadata){
+            let data = {
+                name: this.data.metadata.channelMetadataRenderer.title,
+                youtube: this.data.metadata.channelMetadataRenderer.channelUrl,
+                avatar: this.data.metadata.channelMetadataRenderer.avatar.thumbnails[0].url,
+                customUrl: this.data.metadata.channelMetadataRenderer.vanityChannelUrl.split("/")[4] || this.data.metadata.channelMetadataRenderer.vanityChannelUrl.split("/")[3],
+                links: [],
+            };
+    
+            try{
+                data.cover = this.data.header.c4TabbedHeaderRenderer.banner.thumbnails[5].url;
+            }
+            catch(e){}
+    
+            try{
+                this.data.header.c4TabbedHeaderRenderer?.headerLinks?.channelHeaderLinksRenderer?.secondaryLinks.forEach((item) => {
+                    const urlParams = new URLSearchParams(item.navigationEndpoint.urlEndpoint.url);
+                    const link = urlParams.get('q');
+                    const name = item.title.simpleText;
+                    data.links.push({ name, link });
+                });
+            }
+            catch(e){}
+    
+            try{
+                const subscriberCountText = this.data.header.c4TabbedHeaderRenderer.subscriberCountText.simpleText;
+                data.subscriberCount = parseInt(subscriberCountText.replace(/[^0-9]/g, ""));
+    
+                if(subscriberCountText.includes("K"))
+                    data.subscriberCount *= 1000;            
+                else if(subscriberCountText.includes("M"))
+                    data.subscriberCount *= 1000000;            
+                else if(subscriberCountText.includes("B"))
+                    data.subscriberCount *= 1000000000;
+            }
+            catch(e){}
+    
+            data.customUrl = data.name.replace(/\s/img, '').toLowerCase();
+    
+            return data;
         }
-        catch(e){}
-
-        try{
-            this.data.header.c4TabbedHeaderRenderer?.headerLinks?.channelHeaderLinksRenderer?.secondaryLinks.forEach((item) => {
-                const urlParams = new URLSearchParams(item.navigationEndpoint.urlEndpoint.url);
-                const link = urlParams.get('q');
-                const name = item.title.simpleText;
-                data.links.push({ name, link });
-            });
-        }
-        catch(e){}
-
-        try{
-            const subscriberCountText = this.data.header.c4TabbedHeaderRenderer.subscriberCountText.simpleText;
-            data.subscriberCount = parseInt(subscriberCountText.replace(/[^0-9]/g, ""));
-
-            if(subscriberCountText.includes("K"))
-                data.subscriberCount *= 1000;            
-            else if(subscriberCountText.includes("M"))
-                data.subscriberCount *= 1000000;            
-            else if(subscriberCountText.includes("B"))
-                data.subscriberCount *= 1000000000;
-        }
-        catch(e){}
-
-        data.customUrl = data.name.replace(/\s/img, '').toLowerCase();
-
-        return data;
+        else{
+            return null;
+        }        
     }
 
     getVideos(){
