@@ -13,6 +13,6 @@ const crawl = require('./index');
     //const live = await crawl.inLive('UCdFJLb6-MvpprwBcz4F9E1Q');
     //console.log(live);
 
-    const community = await crawl.getCommunity('https://www.youtube.com/naofazsentido/community');
+    const community = await crawl.getCommunity('https://www.youtube.com/channel/UCLmvyoJW1wJlKY-l1KguCSw/community');
     console.log(community);
 })()

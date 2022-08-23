@@ -192,23 +192,25 @@ class CrawlYT {
                                 const post = contentsInfo.backstagePostThreadRenderer.post.backstagePostRenderer;
                                 let backstageAttachment = null;
 
-                                if(post.backstageAttachment.videoRenderer){
-                                    let views = parseInt(post.backstageAttachment.videoRenderer.viewCountText.simpleText.replace(/[^0-9]/g, ""));
-
-                                    backstageAttachment = {
-                                        type: 'video',
-                                        videoId: post.backstageAttachment.videoRenderer.videoId,
-                                        title: post.backstageAttachment.videoRenderer.title.runs[0].text,
-                                        thumbnail: post.backstageAttachment.videoRenderer.thumbnail.thumbnails[post.backstageAttachment.videoRenderer.thumbnail.thumbnails.length-1].url,
-                                        publishedTime: this.convertTimer(post.backstageAttachment.videoRenderer.publishedTimeText.simpleText),
-                                        description: post.backstageAttachment.videoRenderer.descriptionSnippet.runs[0].text,
-                                        views
+                                if(post.backstageAttachment){
+                                    if(post.backstageAttachment.videoRenderer){
+                                        let views = parseInt(post.backstageAttachment.videoRenderer.viewCountText.simpleText.replace(/[^0-9]/g, ""));
+    
+                                        backstageAttachment = {
+                                            type: 'video',
+                                            videoId: post.backstageAttachment.videoRenderer.videoId,
+                                            title: post.backstageAttachment.videoRenderer.title.runs[0].text,
+                                            thumbnail: post.backstageAttachment.videoRenderer.thumbnail.thumbnails[post.backstageAttachment.videoRenderer.thumbnail.thumbnails.length-1].url,
+                                            publishedTime: this.convertTimer(post.backstageAttachment.videoRenderer.publishedTimeText.simpleText),
+                                            description: post.backstageAttachment.videoRenderer.descriptionSnippet.runs[0].text,
+                                            views
+                                        }
                                     }
-                                }
-                                else if(post.backstageAttachment.backstageImageRenderer){
-                                    backstageAttachment = {
-                                        type: 'image',
-                                        imageUrl: post.backstageAttachment.backstageImageRenderer.image.thumbnails[post.backstageAttachment.backstageImageRenderer.image.thumbnails.length-1].url,
+                                    else if(post.backstageAttachment.backstageImageRenderer){
+                                        backstageAttachment = {
+                                            type: 'image',
+                                            imageUrl: post.backstageAttachment.backstageImageRenderer.image.thumbnails[post.backstageAttachment.backstageImageRenderer.image.thumbnails.length-1].url,
+                                        }
                                     }
                                 }
 
