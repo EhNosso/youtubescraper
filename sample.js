@@ -7,9 +7,12 @@ const crawl = require('./index');
     //const channelInfo = data.getChannelInfo();
     //console.log(channelInfo);
 
-    //const data = await crawl.get('https://www.youtube.com/c/FernandoUlrich_Oficial/channels');
+    //const data = await crawl.get('https://www.youtube.com/channel/UCdFJLb6-MvpprwBcz4F9E1Q/channels');
     //console.log(data.getChannelsLink());
 
-    const live = await crawl.inLive('UCdFJLb6-MvpprwBcz4F9E1Q');
-    console.log(live);
+    //const live = await crawl.inLive('UCdFJLb6-MvpprwBcz4F9E1Q');
+    //console.log(live);
+
+    const community = await crawl.getCommunity('https://www.youtube.com/naofazsentido/community');
+    console.log(community);
 })()

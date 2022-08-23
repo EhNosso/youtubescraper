@@ -93,35 +93,8 @@ class CrawlYT {
                                         const itemVideo = (video.gridVideoRenderer) ? video.gridVideoRenderer: video.videoRenderer;
 
                                         if(itemVideo && itemVideo.publishedTimeText){
-                                            let publishedAt = null;
-                                            let publishedTimeText = itemVideo.publishedTimeText.simpleText.replace("Streamed ", "");
-                                            let publishedTimeTextSplited = publishedTimeText.split(" ");
-                
-                                            if(publishedTimeText.includes("years"))
-                                                publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 24 * 365 * 1000));
-                                            else if(publishedTimeText.includes("year"))
-                                                publishedAt = new Date(new Date().getTime() - (60 * 60 * 24 * 365 * 1000));
-                                            else if(publishedTimeText.includes("months"))
-                                                publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 24 * 30 * 1000));
-                                            else if(publishedTimeText.includes("months"))
-                                                publishedAt = new Date(new Date().getTime() - (60 * 60 * 24 * 30 * 1000));
-                                            else if(publishedTimeText.includes("weeks"))
-                                                publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 24 * 7 * 1000));
-                                            else if(publishedTimeText.includes("week"))
-                                                publishedAt = new Date(new Date().getTime() - (60 * 60 * 24 * 7 * 1000));
-                                            else if(publishedTimeText.includes("days"))
-                                                publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 24 * 1000));
-                                            else if(publishedTimeText.includes("day"))
-                                                publishedAt = new Date(new Date().getTime() - (60 * 60 * 24 * 1000));
-                                            else if(publishedTimeText.includes("hours"))
-                                                publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 1000));
-                                            else if(publishedTimeText.includes("hour"))
-                                                publishedAt = new Date(new Date().getTime() - (60 * 60 * 1000));
-                                            else if(publishedTimeText.includes("minutes"))
-                                                publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 1000));
-                                            else if(publishedTimeText.includes("seconds"))
-                                                publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 1000));
-
+                                            let publishedAt = this.convertTimer(itemVideo.publishedTimeText.simpleText.replace("Streamed ", ""));
+                                            
                                             const dataVideo = {
                                                 channelId: this.data.header.c4TabbedHeaderRenderer.channelId,
                                                 id: itemVideo.videoId,
@@ -203,6 +176,98 @@ class CrawlYT {
                 status: false
             }
         }
+    }
+
+    async getCommunity(channel){
+        let contents = [];
+
+        await this.get(channel);
+
+        for(let tab of this.data.contents.twoColumnBrowseResultsRenderer.tabs){
+            if(tab.tabRenderer && tab.tabRenderer.content){
+                for(let videoSession of tab.tabRenderer.content.sectionListRenderer.contents){
+                    if(videoSession.itemSectionRenderer){
+                        for(let contentsInfo of videoSession.itemSectionRenderer.contents){      
+                            if(contentsInfo.backstagePostThreadRenderer && contentsInfo.backstagePostThreadRenderer.post && contentsInfo.backstagePostThreadRenderer.post.backstagePostRenderer){
+                                const post = contentsInfo.backstagePostThreadRenderer.post.backstagePostRenderer;
+                                let backstageAttachment = null;
+
+                                if(post.backstageAttachment.videoRenderer){
+                                    let views = parseInt(post.backstageAttachment.videoRenderer.viewCountText.simpleText.replace(/[^0-9]/g, ""));
+
+                                    backstageAttachment = {
+                                        type: 'video',
+                                        videoId: post.backstageAttachment.videoRenderer.videoId,
+                                        title: post.backstageAttachment.videoRenderer.title.runs[0].text,
+                                        thumbnail: post.backstageAttachment.videoRenderer.thumbnail.thumbnails[post.backstageAttachment.videoRenderer.thumbnail.thumbnails.length-1].url,
+                                        publishedTime: this.convertTimer(post.backstageAttachment.videoRenderer.publishedTimeText.simpleText),
+                                        description: post.backstageAttachment.videoRenderer.descriptionSnippet.runs[0].text,
+                                        views
+                                    }
+                                }
+                                else if(post.backstageAttachment.backstageImageRenderer){
+                                    backstageAttachment = {
+                                        type: 'image',
+                                        imageUrl: post.backstageAttachment.backstageImageRenderer.image.thumbnails[post.backstageAttachment.backstageImageRenderer.image.thumbnails.length-1].url,
+                                    }
+                                }
+
+                                let likes = 0;
+
+                                try{
+                                    likes = post.voteCount.simpleText.replace(/[^0-9]/g, "");
+                                }
+                                catch(e){
+                                    console.log(post.voteCount.simpleText);
+                                }
+                                
+                                contents.push({
+                                    postId: post.postId,
+                                    likes: Number(likes),
+                                    contents: post.contentText.runs.map((item) => item.text).join("\n"),
+                                    publishedTime: this.convertTimer(post.publishedTimeText.runs[0].text),
+                                    backstageAttachment                                    
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return contents;
+    }
+
+    convertTimer(publishedTimeText){
+        let publishedAt = null;
+        let publishedTimeTextSplited = publishedTimeText.split(" ");
+
+        if(publishedTimeText.includes("years"))
+            publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 24 * 365 * 1000));
+        else if(publishedTimeText.includes("year"))
+            publishedAt = new Date(new Date().getTime() - (60 * 60 * 24 * 365 * 1000));
+        else if(publishedTimeText.includes("month"))
+            publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 24 * 30 * 1000));
+        else if(publishedTimeText.includes("months"))
+            publishedAt = new Date(new Date().getTime() - (60 * 60 * 24 * 30 * 1000));
+        else if(publishedTimeText.includes("weeks"))
+            publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 24 * 7 * 1000));
+        else if(publishedTimeText.includes("week"))
+            publishedAt = new Date(new Date().getTime() - (60 * 60 * 24 * 7 * 1000));
+        else if(publishedTimeText.includes("days"))
+            publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 24 * 1000));
+        else if(publishedTimeText.includes("day"))
+            publishedAt = new Date(new Date().getTime() - (60 * 60 * 24 * 1000));
+        else if(publishedTimeText.includes("hours"))
+            publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 60 * 1000));
+        else if(publishedTimeText.includes("hour"))
+            publishedAt = new Date(new Date().getTime() - (60 * 60 * 1000));
+        else if(publishedTimeText.includes("minutes"))
+            publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 60 * 1000));
+        else if(publishedTimeText.includes("seconds"))
+            publishedAt = new Date(new Date().getTime() - (Number(publishedTimeTextSplited[0]) * 1000));
+
+        return publishedAt;
     }
 }
 
